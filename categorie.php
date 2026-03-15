@@ -4,7 +4,7 @@ require_once 'config.php';
 
 // ตรวจสอบสิทธิ์
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header('Location: login');
+    header('Location: login.php');
     exit;
 }
 

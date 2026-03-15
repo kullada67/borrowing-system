@@ -1,4 +1,5 @@
 <?php
+ob_start(); // เพิ่มบรรทัดนี้เพื่อป้องกันการส่ง Header ผิดพลาด
 session_start();
 require_once 'config.php';
 
@@ -10,18 +11,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($username) || empty($password)) {
         $error = 'กรุณากรอกชื่อผู้ใช้งานและรหัสผ่าน';
     } else {
+        // ค้นหาผู้ใช้จาก username
         $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
         $stmt->execute([$username]);
         $user = $stmt->fetch();
 
+        // ตรวจสอบว่ามีผู้ใช้ และรหัสผ่านตรงกับ Hash หรือไม่
         if ($user && password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['role'] = $user['role'];
             $_SESSION['username'] = $user['username'];
+            
             if ($user['role'] === 'admin') {
-                header('Location: admins');
+                header('Location: admin_dashboard.php');
             } else {
-                header('Location: user_dashboard');
+                header('Location: user_dashboard.php');
             }
             exit;
         } else {
